@@ -1,29 +1,68 @@
 package com.revature.model;
 
-import java.util.ArrayList;
+import java.util.Objects;
 
 public class Customer {
 	
+	private int id;
 	private String firstName =null;
 	private String lastName = null;
 	private String username = null;
 	private String password = null;
-	private String email = null;
-	private String phone = null;	
-	private Double balance = null;
+	private int level;
 	
 	
-	Customer(String username, String password,  String firstName, String lastName, String phone, String email, Double balance){
-		
-		setUsername(username);
-		setPassword(password);
-		setFirstName(firstName);
-		setLastName(lastName);
-		setPhone(phone);
-		setEmail(email);
-		setBalance(balance);
+	public Customer() {
+		super();
+	}
+
+	
+	/**
+	 * This constructor is used for creating customers
+	 * 
+	 * @param firstName
+	 * @param lastName
+	 * @param phone
+	 * @param email
+	 */
+	public Customer(String firstName, String lastName, String username, String password, int level) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.username = username;
+		this.password = password;
+		this.level = level;
 	}
 	
+	
+
+	/**
+	 * this constructor is used fetch data
+	 * @param id
+	 * @param firstName
+	 * @param lastName
+	 * @param phone
+	 * @param email
+	 */
+	public Customer(int id, String firstName, String lastName, String username, String password, int level) {
+		this(  firstName,  lastName,  username,  password, level);
+		this.id = id;
+	}
+
+
+
+
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	
 	public String getFirstName() {
 		return firstName;
@@ -40,74 +79,61 @@ public class Customer {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	
 
-	public Double getBalance() {
-		return balance;
-	}
-
-	public void setBalance(Double balance) {
-		this.balance = balance;
-	}
-
+	
+	
 	public String getUsername() {
 		return username;
 	}
+
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
-	public String getEmail() {
-		return email;
-	}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
 	public String getPassword() {
 		return password;
 	}
 
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
-	/**
-	 * This function allows a customer to make a Deposit into their bank account
-	 * @param Amount
-	 */
-	public void makeDeposit(Double Amount) {
-		
-	}
-	
-	/**
-	 * This function allows a user to make a Withdraw from their account
-	 * @param Amount
-	 */
-	public void makeWithdraw(Double Amount) {
-			
-	}
-	
-	
-	/**
-	 * 
-	 * fetches all transactions made by the user
-	 * @return ArrayList
-	 */
-	public ArrayList<String> getTransactions() {
-		
-		ArrayList<String> transactions = new ArrayList<String>();
-		return transactions;
+
+
+	public int getLevel() {
+		return level;
 	}
 
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+
+	
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(firstName, id, lastName, level, password, username);
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		return Objects.equals(firstName, other.firstName) && id == other.id && Objects.equals(lastName, other.lastName)
+				&& level == other.level && Objects.equals(password, other.password)
+				&& Objects.equals(username, other.username);
+	}
 
 }
