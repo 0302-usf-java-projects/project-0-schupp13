@@ -40,6 +40,70 @@ public class CustomerService {
 	public List<Account> getAccountsByCustomerId(int id){
 		return cdao.getAccountsByCustomerId(id);
 	}
+
+	public int createBankAccount(int id, String type) {
+		
+		return cdao.createBankAccount(id , type);
+	}
+	
+	public boolean checkUser(String username) {
+		
+		return cdao.checkUser(username);
+	}
+
+	public Customer createUser(String userName, String password, String firstName, String lastName) {
+		return cdao.createUser(userName, password, firstName, lastName);
+		
+	}
+	
+	public List<Account> findPending() {
+	
+		return cdao.findPending();
+	}
+
+	
+
+	public boolean approveAccountById(Integer employeeOptionInt) {
+		
+		return cdao.approveAccountById(employeeOptionInt);
+	}
+
+	public List<Account> getEligibleAccounts(int ID) {
+		
+		return cdao.getEligibleAccounts(ID);
+	}
+
+
+
+	public boolean makeDeposit(Float depositAmountFloat, Integer depositToID) {
+		
+		Float currentValue = cdao.currentBalanceByID(depositToID);
+		Float newValue = currentValue + depositAmountFloat;
+		cdao.createTransaction(depositToID, depositToID, depositAmountFloat, "DEPOSIT");
+
+		return cdao.makeDeposit(newValue, depositToID);
+		
+	}
+
+	public boolean makeWithdraw(Float withdrawFromFloat, Integer withdrawToInt) {
+		Float currentValue = cdao.currentBalanceByID(withdrawToInt);
+		Float newValue = currentValue - withdrawFromFloat;
+		
+		if(newValue >= 0) {
+			cdao.createTransaction(withdrawToInt, withdrawToInt, withdrawFromFloat, "WITHDRAW");
+			return cdao.withDraw(newValue, withdrawToInt);
+		}else {
+			return false;
+		}
+		
+	}
+
+	
+
+
+	
+
+	
 	
 	
 }

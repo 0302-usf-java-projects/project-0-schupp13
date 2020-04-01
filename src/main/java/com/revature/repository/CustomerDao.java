@@ -105,12 +105,16 @@ public class CustomerDao implements DaoContract<Customer, Integer> {
 			ps.setString(1, username);
 			ps.setString(2, password);
 			ResultSet rs = ps.executeQuery();
-			rs.next();
-			return findById(rs.getInt(1));
+			while(rs.next()) {
+				return findById(rs.getInt(1));
+			}
+			
 		}catch (SQLException e) {
+			e.printStackTrace();
 			return null;
 			
 		}
+		return null;
 	}
 
 	public List<Account> getAccountsByCustomerId(int id) {
@@ -135,6 +139,210 @@ public class CustomerDao implements DaoContract<Customer, Integer> {
 		}
 	}
 
+	public int createBankAccount(int id, String type) {
+		// TODO Auto-generated method stub
+		try(Connection conn = ConnectionUtil.connect()){
+			String sql = "insert into \"Account\" (\"CustomerId\", \"AccountType\") values (? , ?) RETURNING \"Id\" " ;
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+		
+			ps.setInt(1, id);
+			ps.setString(2, type);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				return rs.getInt(1);
+			}
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+			
+		}
+		return -1;
+	}
+
+	public boolean checkUser(String username) {
+		// TODO Auto-generated method stub
+		
+		try(Connection conn = ConnectionUtil.connect()){
+			String sql = "select * from \"Customer\" where \"Username\" = ?" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				return true;
+			}
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+			
+		}
+		return false;
+	}
+
+	public Customer createUser(String userName, String password, String firstName, String lastName) {
+		try(Connection conn = ConnectionUtil.connect()){
+			String sql = "insert into \"Customer\" values(default, ? , ?, ?,?, default) RETURNING \"Id\"" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, firstName);
+			ps.setString(2, lastName);
+			ps.setString(3, userName);
+			ps.setString(4, password);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				return findById(rs.getInt(1));
+			}
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return null;
+	}
+
+	public List<Account> findPending() {
+		
+		try(Connection conn = ConnectionUtil.connect()){
+			List<Account> customerAccounts = new ArrayList<Account>();
+
+			String sql = "select * from \"Account\" where \"Approved\" = ?" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setBoolean(1, false);
+			
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				customerAccounts.add(new Account(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getFloat(4), rs.getBoolean(5)));
+			}
+			return customerAccounts;
+			
+		}catch (SQLException e) {
+			System.out.println("test");
+			e.printStackTrace();
+			return null;
+			
+		}
+			
+		
+		}
+
+	public boolean approveAccountById(Integer employeeOptionInt) {
+		try(Connection conn = ConnectionUtil.connect()){
+			String sql = "update \"Account\" set \"Approved\" = true where \"Id\" = ?  RETURNING \"Approved\"" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, employeeOptionInt);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				return rs.getBoolean(1);
+			}
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	}
+
+	public List<Account> getEligibleAccounts(int ID) {
+		try(Connection conn = ConnectionUtil.connect()){
+			List<Account> customerAccounts = new ArrayList<Account>();
+
+			String sql = "select * from \"Account\" where \"Approved\"  = true and  \"CustomerId\" = ?" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			
+			ps.setInt(1,ID);
+			
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				customerAccounts.add(new Account(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getFloat(4), rs.getBoolean(5)));
+			}
+			return customerAccounts;
+			
+		}catch (SQLException e) {
+			System.out.println("test");
+			e.printStackTrace();
+			return null;
+			
+		}
+	}
+	
+	public void createTransaction(Integer fromAccount, Integer toAccount, Float amount, String type) {
+		try(Connection conn = ConnectionUtil.connect()){
+			String sql = "insert into \"Transactions\" values (default, ?, ? , ?, ?);" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			
+			ps.setString(1, type);
+			ps.setInt(2, fromAccount);
+			ps.setInt(3, toAccount);
+			ps.setFloat(4, amount);
+			ps.execute();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		
+	}
+
+	public boolean makeDeposit(Float depositAmountFloat, Integer depositToInt) {
+		try(Connection conn = ConnectionUtil.connect()){
+			String sql = "update \"Account\" set \"Balance\" = ? where \"Id\"  = ? RETURNING \"Approved\";" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setFloat(1, depositAmountFloat);
+			ps.setInt(2, depositToInt);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				
+				return rs.getBoolean(1);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+		
+	}
+
+	public Float currentBalanceByID(Integer ID) {
+		try(Connection conn = ConnectionUtil.connect()){
+
+			String sql = "select \"Balance\" from \"Account\" where \"Id\"  = ?" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			
+			ps.setFloat(1,ID);
+			
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				return rs.getFloat(1);
+			}
+			return null;
+			
+		}catch (SQLException e) {
+			System.out.println("test");
+			e.printStackTrace();
+			return null;
+			
+		}
+	}
+
+	public boolean withDraw(Float newValue, Integer withdrawToInt) {
+		try(Connection conn = ConnectionUtil.connect()){
+			String sql = "update \"Account\" set \"Balance\" = ? where \"Id\"  = ? RETURNING \"Approved\";" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setFloat(1, newValue);
+			ps.setInt(2, withdrawToInt);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				
+				return rs.getBoolean(1);
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	}
+
+
+	
 	
 
 
