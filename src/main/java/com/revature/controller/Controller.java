@@ -25,7 +25,7 @@ public class Controller {
 
 	
 
-	public static final Logger logger = Logger.getLogger("This is my Logger for the bank app");
+	public static final Logger logger = Logger.getLogger("Bank Application: ");
 	Service service = new Service();
 	List<Customer> list = new ArrayList<>();
 	public static String homeOption;
@@ -41,7 +41,7 @@ public class Controller {
 	}
 	
 	public void homeMenu()  {
-		logger.info("Program started");
+		logger.info("Program started - Main Menu");
 		String option;
 		do {
 		 System.out.println("Hello, Welcome to Parker's Bank!");
@@ -82,6 +82,7 @@ public class Controller {
 		 int count = 0;
 			count++;
 			Map<String, String> credentials = new HashMap<String, String>();
+			logger.info("Program started - Customer is loggin - Login Menu");
 		 do {
 			 System.out.println("Please enter your credintials below:  ");
 			 
@@ -95,11 +96,12 @@ public class Controller {
 			 
 			 
 			 customer = customerService.login(credentials.get("username"),credentials.get("password"));
-			 System.out.println(customer);
+			
 		
 			 
 			 if(customer == null) {
 				 System.out.println("Sorry, but that username/password is incorrect");
+				 
 				 loginMenu();
 				 if(count >= 3) {
 					 System.out.println("Sorry, but failing three time will send you back to the home menu.");
@@ -115,16 +117,20 @@ public class Controller {
 	 * checks the user security level- 0 is a customer, 1 is a employee, 2 is a manger
 	 */
 	public void checkSecurityForMenu() {
+		logger.info("Login was succelfull. Checking security level of user");
 		setLogegdIn(true);
 
 		if(customer.getLevel() == 0) {
+			logger.info("User has customer level access");
 			customerMenu();
 		}else if (customer.getLevel() == 1) {
+			logger.info("User had employee level access");
 			employeeMenu();
+		}else {
+			logger.error("User does not have an accurate userlevel sending user back to the home menu.Look at user Record: "  + customer.getId());
+			homeMenu();
 		}
-		else {
-			
-		}
+		
 		
 	}
 	
@@ -401,8 +407,8 @@ public class Controller {
 			
 		}catch(NumberFormatException e) {
 			 
-		 
-			System.out.println("Not a valid entry. try again");
+			logger.error("Not a valid entry. try again");
+			//System.out.println("Not a valid entry. try again");
 			makeDeposit();
 		}
 
