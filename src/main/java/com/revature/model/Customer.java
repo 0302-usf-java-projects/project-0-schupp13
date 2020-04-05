@@ -45,7 +45,7 @@ public class Customer {
 	 * @param email
 	 */
 	public Customer(int id, String firstName, String lastName, String username, String password, int level) {
-		this(  firstName,  lastName,  username,  password, level);
+		this(firstName,lastName,  username,  password, level);
 		this.id = id;
 	}
 

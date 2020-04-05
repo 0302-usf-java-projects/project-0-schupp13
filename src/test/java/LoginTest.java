@@ -43,5 +43,10 @@ public class LoginTest {
 		   assertTrue(result.size() == 1);
 		   
 	  }
+	  
+	  @Test
+	  public void logout() {
+		  
+	  }
 
 }

@@ -1,10 +1,12 @@
 package com.revature.controller;
 
+
+
 import com.revature.model.Account;
 import com.revature.model.Customer;
+import com.revature.model.Transaction;
 
 import org.apache.log4j.Logger;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import com.revature.service.Service;
 
 
 public class Controller {
+
 	
 
 	public static final Logger logger = Logger.getLogger("This is my Logger for the bank app");
@@ -32,17 +35,12 @@ public class Controller {
 	Scanner scan = new Scanner(System.in);
 	CustomerService customerService = new CustomerService();
 	
-
-
-
-
+	
 	public Controller(){
-		
-		
 		
 	}
 	
-	public void homeMenu() {
+	public void homeMenu()  {
 		logger.info("Program started");
 		String option;
 		do {
@@ -78,15 +76,13 @@ public class Controller {
 		}
 	}
 	
-	public void  loginMenu() {	
-
+	public void  loginMenu(){	
 		 String username;
 		 String password;
 		 int count = 0;
-		do {
 			count++;
 			Map<String, String> credentials = new HashMap<String, String>();
-		 
+		 do {
 			 System.out.println("Please enter your credintials below:  ");
 			 
 			 System.out.println("Please enter your Username:");
@@ -97,16 +93,21 @@ public class Controller {
 			 password = scan.nextLine();
 			 credentials.put("password", password.trim());
 			 
+			 
 			 customer = customerService.login(credentials.get("username"),credentials.get("password"));
+			 System.out.println(customer);
+		
+			 
 			 if(customer == null) {
 				 System.out.println("Sorry, but that username/password is incorrect");
+				 loginMenu();
 				 if(count >= 3) {
 					 System.out.println("Sorry, but failing three time will send you back to the home menu.");
 					 homeMenu();
 				 }
 			 }
-			 }while(customer == null);
-	
+			
+		 }while(customer == null);
 		checkSecurityForMenu();
 	}
 	
@@ -165,7 +166,23 @@ public class Controller {
 	private void viewTrans() {
 		// TODO Auto-generated method stub
 		
+		List<Transaction> transactions = new ArrayList<Transaction>();
+		transactions = customerService.getAllTransactions();
 		
+		System.out.println();
+		
+		
+		if(transactions.size() > 0) {
+			
+			for(Transaction transaction: transactions) {
+				
+				System.out.printf(" Transaction ID: " + transaction.getId() + " " + transaction.transType + " From Account: " + transaction.getFromAccount() + " To Account: " + transaction.getToAccount()  + " Amount: %.2f %n%n", transaction.getAmount());
+			}
+			
+		}else {
+			System.out.println("No Transactions");
+		}
+
 		
 	}
 
@@ -179,10 +196,7 @@ public class Controller {
 				customer.getFirstName() , customer.getLastName());
 		System.out.println("**********************************************");
 		
-		
-		
 		List<Account> pendingAccounts = customerService.findPending();
-		
 		 List<Integer> accountInList = new ArrayList<Integer>(); 
 		 if (pendingAccounts.size() > 0) {
 			
@@ -343,10 +357,7 @@ public class Controller {
 				customerMenu();}
 		 };
 	
-	private void makeTransfer() {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	private void makeWithdraw() {
 		System.out.println("List Eligible Accounts: ");
@@ -429,8 +440,8 @@ public class Controller {
 			 Integer depositToInt = Integer.parseInt(depositTo);
 			 if(accountInList.contains(depositToInt)) {
 			
-				 boolean test = customerService.makeDeposit(depositAmountFloat, depositToInt);
-				 flag = true;
+				 flag = customerService.makeDeposit(depositAmountFloat, depositToInt);
+				
 				 if(flag == false) {
 					 System.out.println("transaction did not go through. ");
 				 }

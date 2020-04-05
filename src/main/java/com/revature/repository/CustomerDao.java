@@ -11,6 +11,7 @@ import org.postgresql.util.PSQLException;
 import com.revature.config.ConnectionUtil;
 import com.revature.model.Account;
 import com.revature.model.Customer;
+import com.revature.model.Transaction;
 
 
 
@@ -321,6 +322,29 @@ public class CustomerDao implements DaoContract<Customer, Integer> {
 			return null;
 			
 		}
+	}
+	
+	
+	public List<Transaction> getAllTransactions(){
+		try(Connection conn = ConnectionUtil.connect()){
+			List <Transaction> transactions = new ArrayList <Transaction>();
+
+			String sql = "select * from \"Transactions\"" ;
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				transactions.add(new Transaction(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getInt(4), rs.getFloat(5)));
+			}
+			return transactions;
+			
+		}catch (SQLException e) {
+			System.out.println("test");
+			e.printStackTrace();
+			return null;
+		}
+	
+		
+		
 	}
 
 	public boolean withDraw(Float newValue, Integer withdrawToInt) {

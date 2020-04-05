@@ -1,9 +1,11 @@
 package com.revature.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.revature.model.Account;
 import com.revature.model.Customer;
+import com.revature.model.Transaction;
 import com.revature.repository.CustomerDao;
 
 public class CustomerService {
@@ -98,12 +100,13 @@ public class CustomerService {
 		
 	}
 
-	
 
-
+public List<Transaction> getAllTransactions(){
 	
-
+	List<Transaction> transactions = new ArrayList<Transaction>();
+	transactions = cdao.getAllTransactions();
+	return transactions;
 	
-	
+}
 	
 }
