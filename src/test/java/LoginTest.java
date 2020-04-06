@@ -31,7 +31,7 @@ public class LoginTest {
 	  public void login() {
 	    Customer result = service.login("pooker", "password");
 	  
-		   assertTrue(result.getFirstName() == "Philip");
+		   assertTrue(result.getFirstName().equals("Philip"));
 		   
 	  }
 	  

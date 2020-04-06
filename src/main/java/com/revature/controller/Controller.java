@@ -2,6 +2,7 @@ package com.revature.controller;
 
 
 
+import com.revature.exception.LoginException;
 import com.revature.model.Account;
 import com.revature.model.Customer;
 import com.revature.model.Transaction;
@@ -58,7 +59,13 @@ public class Controller {
 		
 		switch(option) {
 		case "1":
-			loginMenu();
+			try {
+				loginMenu();
+			} catch (LoginException e) {
+				// TODO Auto-generated catch block
+				logger.error("username or password was incorrrect. Main Menu.");
+				
+			}
 			homeMenu();
 			break;
 		case "2":
@@ -76,14 +83,14 @@ public class Controller {
 		}
 	}
 	
-	public void  loginMenu(){	
+	public void  loginMenu() throws LoginException{
+		
 		 String username;
 		 String password;
-		 int count = 0;
-			count++;
+			
 			Map<String, String> credentials = new HashMap<String, String>();
 			logger.info("Program started - Customer is loggin - Login Menu");
-		 do {
+		
 			 System.out.println("Please enter your credintials below:  ");
 			 
 			 System.out.println("Please enter your Username:");
@@ -93,23 +100,12 @@ public class Controller {
 			 System.out.println("Please enter you password:");
 			 password = scan.nextLine();
 			 credentials.put("password", password.trim());
-			 
-			 
+		 
 			 customer = customerService.login(credentials.get("username"),credentials.get("password"));
-			
-		
-			 
+
 			 if(customer == null) {
-				 System.out.println("Sorry, but that username/password is incorrect");
-				 
-				 loginMenu();
-				 if(count >= 3) {
-					 System.out.println("Sorry, but failing three time will send you back to the home menu.");
-					 homeMenu();
-				 }
+				 throw new LoginException();
 			 }
-			
-		 }while(customer == null);
 		checkSecurityForMenu();
 	}
 	
@@ -237,11 +233,6 @@ public class Controller {
 		 }catch(NumberFormatException e) {
 			 
 		 }
-		 
-		
-		 
-		 
-		 
 	
 		}while(!(employeeOption.equalsIgnoreCase("back")) );
 		
